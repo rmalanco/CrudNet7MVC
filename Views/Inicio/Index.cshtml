@@ -1,0 +1,246 @@
+﻿@model IEnumerable<CrudNet7MVC.Models.Contacto>
+@{
+    ViewData["Title"] = "Lista de contactos";
+}
+
+<h1 class="text-center">Contactos con MVC .NET 7.</h1>
+<div class="row">
+    <div class="offset-9 col-3 mb-3">
+        <a asp-action="Create" asp-controller="Inicio" class="btn btn-primary d-block">
+            <i class="bi bi-plus-circle"></i>
+            Nuevo contacto
+        </a>
+    </div>
+</div>
+<div class="row">
+    <div class="offset-12">
+        <div class="card-header bg-dark text-white">
+            <h3 class="card-title">Lista de contactos</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                @if (Model.Count() > 0)
+                {
+                    <table id="tblUsuarios" aria-describedby="dataTable_info" class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.Nombre)</th>
+                                <th>@Html.DisplayNameFor(model => model.Telefono)</th>
+                                <th>@Html.DisplayNameFor(model => model.Celular)</th>
+                                <th>@Html.DisplayNameFor(model => model.Email)</th>
+                                <th>@Html.DisplayNameFor(model => model.FechaCreacion)</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => item.Nombre)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Telefono)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Celular)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.FechaCreacion)</td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalEliminar" data-id="@item.Id">
+                                            <i class="bi bi-trash mr-2"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalEditar" data-id="@item.Id">
+                                            <i class="bi bi-pencil-square mr-2"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalDetalles" data-id="@item.Id">
+                                            <i class="bi bi-eye mr-2"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                } else {
+                    <p>No hay contactos registrados</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEliminar" tabindex="-1" role="dialog" aria-labelledby="modalEliminarLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="modalEliminarLabel">Eliminar contacto</h5>
+                <button class="btn btn-danger" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="bi bi-x-circle"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de eliminar el contacto seleccionado?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <form action="/Inicio/Delete" method="post">
+                    <input type="hidden" id="id" name="id" value="" />
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEditar" tabindex="-1" role="dialog" aria-labelledby="modalEditarLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalEditarLabel">Editar contacto</h5>
+                <button class="btn btn-primary" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="bi bi-x-circle"></i></span>
+                </button>
+            </div>
+            <form id="formEditar" asp-action="Edit" method="post">
+                <div class="modal-body">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" id="editarId" name="id" value="" />
+                    <div class="form-group">
+                        <label for="editarNombre">Nombre:</label>
+                        <input type="text" class="form-control" id="editarNombre" name="nombre" placeholder="Nombre" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="editarTelefono">Teléfono:</label>
+                        <input type="text" class="form-control" id="editarTelefono" name="telefono" placeholder="Teléfono" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="editarCelular">Celular:</label>
+                        <input type="text" class="form-control" id="editarCelular" name="celular" placeholder="Celular" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="editarEmail">Email:</label>
+                        <input type="email" class="form-control" id="editarEmail" name="email" placeholder="Email" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Editar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalDetalles" tabindex="-1" role="dialog" aria-labelledby="modalDetallesLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="modalDetallesLabel">Detalles del contacto</h5>
+                <button class="btn btn-success" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="bi bi-x-circle"></i></span>
+                </button>
+            </div>
+            <form id="formDetalles" asp-action="Details" method="post">
+                <div class="modal-body">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" id="detallesId" name="id" value="" />
+                    <div class="form-group">
+                        <label for="detallesNombre">Nombre:</label>
+                        <input type="text" class="form-control" id="detallesNombre" name="nombre" placeholder="Nombre" required readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="detallesTelefono">Teléfono:</label>
+                        <input type="text" class="form-control" id="detallesTelefono" name="telefono" placeholder="Teléfono" required readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="detallesCelular">Celular:</label>
+                        <input type="text" class="form-control" id="detallesCelular" name="celular" placeholder="Celular" required readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="detallesEmail">Email:</label>
+                        <input type="email" class="form-control" id="detallesEmail" name="email" placeholder="Email" required readonly />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Aceptar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            //Llamar a datatable
+            $('#tblUsuarios').DataTable({
+                language: {
+                    "decimal": "",
+                    "emptyTable": "No hay información",
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+                    "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+                    "infoFiltered": "(Filtrado de _MAX_ total entradas)",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "Mostrar _MENU_ Entradas",
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                    "search": "Buscar:",
+                    "zeroRecords": "Sin resultados encontrados",
+                    "paginate": {
+                        "first": "Primero",
+                        "last": "Ultimo",
+                        "next": "Siguiente",
+                        "previous": "Anterior"
+                    }
+                },
+                responsive: true,
+                autoWidth: false
+            });
+        });
+
+        $('#modalEliminar').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Botón que abre el modal
+                var id = button.data('id'); // Obtener el ID del elemento
+                var modal = $(this); // Modal actual
+                modal.find('#id').val(id); // Actualizar el valor del campo oculto con el ID
+            });
+
+        $('#modalEditar').on('show.bs.modal', function (event) {
+            //por metodo ajax traemos los datos del contacto
+            var id = $(event.relatedTarget).data('id');
+            // ajax por metodo get ya que solo queremos traer los datos y son json
+            $.get("/Inicio/Details/" + id, function (data) {
+                var success = data.success;
+                if (success == true) {
+                    var contacto = data.data;
+                    $('#editarId').val(contacto.id);
+                    $('#editarNombre').val(contacto.nombre);
+                    $('#editarTelefono').val(contacto.telefono);
+                    $('#editarCelular').val(contacto.celular);
+                    $('#editarEmail').val(contacto.email);
+                } else {
+                    console.log(data.message);
+                }
+            });
+        });
+
+        $('#modalDetalles').on('show.bs.modal', function (event) {
+            //por metodo ajax traemos los datos del contacto
+            var id = $(event.relatedTarget).data('id');
+            // ajax por metodo get ya que solo queremos traer los datos y son json
+            $.get("/Inicio/Details/" + id, function (data) {
+                var success = data.success;
+                if (success == true) {
+                    var contacto = data.data;
+                    $('#detallesId').val(contacto.id);
+                    $('#detallesNombre').val(contacto.nombre);
+                    $('#detallesTelefono').val(contacto.telefono);
+                    $('#detallesCelular').val(contacto.celular);
+                    $('#detallesEmail').val(contacto.email);
+                } else {
+                    console.log(data.message);
+                }
+            });
+        });
+
+    </script>
+}
+
