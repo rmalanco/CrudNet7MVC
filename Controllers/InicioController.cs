@@ -26,6 +26,11 @@ namespace CrudNet7MVC.Controllers
             return View();
         }
 
+        public async Task<IActionResult> Contactos()
+        {
+            return View(await _contexto.Contacto.ToListAsync());
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
@@ -56,8 +61,7 @@ namespace CrudNet7MVC.Controllers
         }
 
         [HttpPost]
-        [ActionName("Delete")]
-        public async Task<JsonResult> DeleteContact(int? id)
+        public async Task<JsonResult> Delete(int? id)
         {
             if (id == null)
             {

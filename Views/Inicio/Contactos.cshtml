@@ -1,0 +1,28 @@
+@model IEnumerable<CrudNet7MVC.Models.Contacto>
+
+@{
+    ViewData["Title"] = "Contactos";
+}
+
+<h1>Contactos</h1>
+
+<table class="table" aria-describedby="contactos">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Id)</th>
+            <th>@Html.DisplayNameFor(model => model.Nombre)</th>
+            <th>@Html.DisplayNameFor(model => model.Telefono)</th>
+            <th>@Html.DisplayNameFor(model => model.Celular)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Id)</td>
+            <td>@Html.DisplayFor(modelItem => item.Nombre)</td>
+            <td>@Html.DisplayFor(modelItem => item.Telefono)</td>
+            <td>@Html.DisplayFor(modelItem => item.Celular)</td>
+        </tr>
+        }
+    </tbody>
+</table>
