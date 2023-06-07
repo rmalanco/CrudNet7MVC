@@ -4,115 +4,107 @@ using CrudNet7MVC.Models;
 using CrudNet7MVC.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace CrudNet7MVC.Controllers;
-
-public class InicioController : Controller
+namespace CrudNet7MVC.Controllers
 {
-    private readonly ApplicationDbContext _contexto;
-
-    public InicioController(ApplicationDbContext contexto)
+    public class InicioController : Controller
     {
-        _contexto = contexto;
-    }
+        private readonly ApplicationDbContext _contexto;
 
-    [HttpGet]
-    public async Task<IActionResult> Index()
-    {
-        return View(await _contexto.Contacto.ToListAsync());
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
-
-    [HttpGet]
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    public async Task<IActionResult> Create(Contacto contacto)
-    {
-        if (ModelState.IsValid)
+        public InicioController(ApplicationDbContext contexto)
         {
-            contacto.FechaCreacion = DateTime.Now;
-            _contexto.Add(contacto);
+            _contexto = contexto;
+        }
+
+        [HttpGet]
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> GetById(int? id)
+        {
+            if (id == null)
+            {
+                return Json(new { success = false, message = "Error al cargar el contacto" });
+            }
+
+            var contacto = await _contexto.Contacto.FindAsync(id);
+            if (contacto == null)
+            {
+                return Json(new { success = false, message = "Error al cargar el contacto" });
+            }
+            return Json(new { success = true, message = "Contacto cargado correctamente", data = contacto });
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetAll()
+        {
+            var contactos = await _contexto.Contacto.Select(x => new { x.Id, x.Nombre, x.Telefono, x.Celular, x.Email, FechaCreacion = x.FechaCreacion.ToString("dd/MM/yyyy HH:mm:ss") }).ToListAsync();
+            return Json(new { data = contactos });
+        }
+
+        [HttpPost]
+        [ActionName("Delete")]
+        public async Task<JsonResult> DeleteContact(int? id)
+        {
+            if (id == null)
+            {
+                return Json(new { success = false, message = "Error al eliminar el contacto" });
+            }
+
+            var contacto = await _contexto.Contacto.FindAsync(id);
+            if (contacto == null)
+            {
+                return Json(new { success = false, message = "Error al eliminar el contacto" });
+            }
+
+            _contexto.Contacto.Remove(contacto);
             await _contexto.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(contacto);
-    }
-
-    [HttpGet]
-    public async Task<JsonResult> Details(int? id)
-    {
-        if (id == null)
-        {
-            return Json(new { success = false, message = "Error al cargar el contacto" });
+            return Json(new { success = true, message = "Contacto eliminado correctamente" });
         }
 
-        var contacto = await _contexto.Contacto.FindAsync(id);
-        if (contacto == null)
+        [HttpPost]
+        public async Task<JsonResult> Create(Contacto contacto)
         {
-            return Json(new { success = false, message = "Error al cargar el contacto" });
-        }
-        return Json(new { success = true, message = "Contacto cargado correctamente", data = contacto });
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Edit(int id, Contacto contacto)
-    {
-        if (id != contacto.Id)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
+            if (ModelState.IsValid)
             {
-                var contactoEditar = await _contexto.Contacto.FindAsync(id);
-                contactoEditar.Nombre = contacto.Nombre;
-                contactoEditar.Telefono = contacto.Telefono;
-                contactoEditar.Celular = contacto.Celular;
-                contactoEditar.Email = contacto.Email;
+                _contexto.Add(contacto);
                 await _contexto.SaveChangesAsync();
+                return Json(new { success = true, message = "Contacto creado correctamente" });
             }
-            catch (DbUpdateConcurrencyException)
+            else
             {
-                if (!ContactoExists(contacto.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                return Json(new { success = false, message = "Error al crear el contacto", errors });
             }
-            return RedirectToAction(nameof(Index));
         }
-        return View(contacto);
-    }
 
-    [HttpPost]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var contacto = await _contexto.Contacto.FindAsync(id);
-        _contexto.Contacto.Remove(contacto);
-        await _contexto.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    // metodos inicio
-    private bool ContactoExists(int id)
-    {
-        return _contexto.Contacto.Any(e => e.Id == id);
+        [HttpPost]
+        public async Task<JsonResult> Update(Contacto contacto)
+        {
+            if (ModelState.IsValid)
+            {
+                _contexto.Update(contacto);
+                await _contexto.SaveChangesAsync();
+                return Json(new { success = true, message = "Contacto actualizado correctamente" });
+            }
+            else
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                return Json(new { success = false, message = "Error al actualizar el contacto", errors });
+            }
+        }
     }
 }

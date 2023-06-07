@@ -25,12 +25,3 @@ namespace CrudNet7MVC.Models
         public DateTime FechaCreacion { get; set; } = DateTime.Now;
     }
 }
-
-// datos para la tabla Contacto es:
-// Id 
-// Nombre
-// Telefono
-// Celular
-// Email
-// FechaCreacion
-//

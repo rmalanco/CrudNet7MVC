@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CrudNet7MVC.Models.Contacto>
+﻿@model CrudNet7MVC.Models.Contacto
 @{
     ViewData["Title"] = "Lista de contactos";
 }
@@ -6,12 +6,13 @@
 <h1 class="text-center">Contactos con MVC .NET 7.</h1>
 <div class="row">
     <div class="offset-9 col-3 mb-3">
-        <a asp-action="Create" asp-controller="Inicio" class="btn btn-primary d-block">
-            <i class="bi bi-plus-circle"></i>
-            Nuevo contacto
-        </a>
+        <button type="button" class="btn btn-primary d-block" data-toggle="modal" data-target="#modalCrearEditarDetalles" id="btnAgregar">
+            <i class="bi bi-trash mr-2"></i>
+            Agregar contacto
+        </button>
     </div>
 </div>
+
 <div class="row">
     <div class="offset-12">
         <div class="card-header bg-dark text-white">
@@ -19,46 +20,75 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                @if (Model.Count() > 0)
-                {
-                    <table id="tblUsuarios" aria-describedby="dataTable_info" class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>@Html.DisplayNameFor(model => model.Nombre)</th>
-                                <th>@Html.DisplayNameFor(model => model.Telefono)</th>
-                                <th>@Html.DisplayNameFor(model => model.Celular)</th>
-                                <th>@Html.DisplayNameFor(model => model.Email)</th>
-                                <th>@Html.DisplayNameFor(model => model.FechaCreacion)</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td>@Html.DisplayFor(modelItem => item.Nombre)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Telefono)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Celular)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Email)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.FechaCreacion)</td>
-                                    <td>
-                                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalEliminar" data-id="@item.Id">
-                                            <i class="bi bi-trash mr-2"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalEditar" data-id="@item.Id">
-                                            <i class="bi bi-pencil-square mr-2"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalDetalles" data-id="@item.Id">
-                                            <i class="bi bi-eye mr-2"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                } else {
-                    <p>No hay contactos registrados</p>
-                }
+                <table id="tblUsuarios" aria-describedby="dataTable_info" class="table table-bordered table-hover dataTable">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Telefono</th>
+                            <th>Celular</th>
+                            <th>Email</th>
+                            <th>Fecha Creacion</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalCrearEditarDetalles">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h4 class="modal-title">Crear Contacto</h4>
+                <button type="button" data-dismiss="modal" aria-label="Close" class="bg-dark text-white close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="formCrearEditarDetalles" method="POST">
+                    <input type="hidden" id="id" name="id" value="0">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group row">
+                        <label asp-for="Nombre" for="nombre" class="col-sm-3 col-form-label">Nombre</label>
+                        <div class="col-sm-9 mb-3">
+                            <input id="nombre" asp-for="Nombre" class="form-control" type="text" name="nombre" placeholder="Nombre" required>
+                            <span asp-validation-for="Nombre" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Telefono" for="telefono" class="col-sm-3 col-form-label">Telefono</label>
+                        <div class="col-sm-9 mb-3">
+                            <input id="telefono" asp-for="Telefono" class="form-control" type="text" name="telefono" placeholder="Telefono" required>
+                            <span asp-validation-for="Telefono" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Celular" for="celular" class="col-sm-3 col-form-label">Celular</label>
+                        <div class="col-sm-9 mb-3">
+                            <input id="celular" asp-for="Celular" class="form-control" type="text" name="celular" placeholder="Celular" required>
+                            <span asp-validation-for="Celular" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Email" for="email" class="col-sm-3 col-form-label">Email</label>
+                        <div class="col-sm-9 mb-3">
+                            <input type="email" id="email" asp-for="Email" class="form-control" name="email" placeholder="Email" required>
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-block" id="btnGuardar">Guardar</button>
+                                <button type="button" id="btnCancelar" class="btn btn-danger btn-block" data-dismiss="modal">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -68,110 +98,50 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
+                <input type="hidden" id="idEliminar" name="idEliminar" value="0">
                 <h5 class="modal-title" id="modalEliminarLabel">Eliminar contacto</h5>
                 <button class="btn btn-danger" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true"><i class="bi bi-x-circle"></i></span>
+                    <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                ¿Estás seguro de eliminar el contacto seleccionado?
+                <p>¿Estás seguro de que deseas eliminar este contacto?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <form action="/Inicio/Delete" method="post">
-                    <input type="hidden" id="id" name="id" value="" />
-                    <button type="submit" class="btn btn-danger">Eliminar</button>
-                </form>
+                <button class="btn btn-danger" id="btnEliminar">Eliminar</button>
+                <button class="btn btn-secondary" id="btnCerrarEliminar" data-dismiss="modal">Cancelar</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="modalEditar" tabindex="-1" role="dialog" aria-labelledby="modalEditarLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="modalEditarLabel">Editar contacto</h5>
-                <button class="btn btn-primary" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true"><i class="bi bi-x-circle"></i></span>
-                </button>
-            </div>
-            <form id="formEditar" asp-action="Edit" method="post">
-                <div class="modal-body">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <input type="hidden" id="editarId" name="id" value="" />
-                    <div class="form-group">
-                        <label for="editarNombre">Nombre:</label>
-                        <input type="text" class="form-control" id="editarNombre" name="nombre" placeholder="Nombre" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="editarTelefono">Teléfono:</label>
-                        <input type="text" class="form-control" id="editarTelefono" name="telefono" placeholder="Teléfono" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="editarCelular">Celular:</label>
-                        <input type="text" class="form-control" id="editarCelular" name="celular" placeholder="Celular" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="editarEmail">Email:</label>
-                        <input type="email" class="form-control" id="editarEmail" name="email" placeholder="Email" required />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Editar</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
-<div class="modal fade" id="modalDetalles" tabindex="-1" role="dialog" aria-labelledby="modalDetallesLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="modalDetallesLabel">Detalles del contacto</h5>
-                <button class="btn btn-success" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true"><i class="bi bi-x-circle"></i></span>
-                </button>
-            </div>
-            <form id="formDetalles" asp-action="Details" method="post">
-                <div class="modal-body">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <input type="hidden" id="detallesId" name="id" value="" />
-                    <div class="form-group">
-                        <label for="detallesNombre">Nombre:</label>
-                        <input type="text" class="form-control" id="detallesNombre" name="nombre" placeholder="Nombre" required readonly />
-                    </div>
-                    <div class="form-group">
-                        <label for="detallesTelefono">Teléfono:</label>
-                        <input type="text" class="form-control" id="detallesTelefono" name="telefono" placeholder="Teléfono" required readonly />
-                    </div>
-                    <div class="form-group">
-                        <label for="detallesCelular">Celular:</label>
-                        <input type="text" class="form-control" id="detallesCelular" name="celular" placeholder="Celular" required readonly />
-                    </div>
-                    <div class="form-group">
-                        <label for="detallesEmail">Email:</label>
-                        <input type="email" class="form-control" id="detallesEmail" name="email" placeholder="Email" required readonly />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-dismiss="modal">Aceptar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-
-
+<!-- Modal Crear/Editar -->
 @section Scripts{
     <script>
-        $(document).ready(function () {
-            //Llamar a datatable
-            $('#tblUsuarios').DataTable({
-                language: {
+    $(document).ready(function () {
+        //Llamar a datatable y generar la tabla de datos
+        $('#tblUsuarios').DataTable({
+            ajax: {
+                url: "/Inicio/GetAll"
+            },
+            columns: [
+                { "data": "nombre" },
+                { "data": "telefono" },
+                { "data": "celular" },
+                { "data": "email" },
+                { "data": "fechaCreacion" },
+                {
+                    "data": "id",
+                    "render": function (data) {
+                        return '<div class="btn-group" role="group" aria-label="Basic example">' +
+                            '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalCrearEditarDetalles" data-id="' + data + '"><i class="bi bi-pencil-square"></i></button>' +
+                            '<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalEliminar" data-id="' + data + '"><i class="bi bi-trash"></i></button>' +
+                            '</div>';
+                    }
+                }
+            ],
+            language: {
                     "decimal": "",
                     "emptyTable": "No hay información",
                     "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
@@ -190,56 +160,129 @@
                         "next": "Siguiente",
                         "previous": "Anterior"
                     }
-                },
-                responsive: true,
-                autoWidth: false
-            });
+                }
         });
 
-        $('#modalEliminar').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget); // Botón que abre el modal
-                var id = button.data('id'); // Obtener el ID del elemento
-                var modal = $(this); // Modal actual
-                modal.find('#id').val(id); // Actualizar el valor del campo oculto con el ID
-            });
-
-        $('#modalEditar').on('show.bs.modal', function (event) {
-            //por metodo ajax traemos los datos del contacto
+        $('#modalCrearEditarDetalles').on('show.bs.modal', function (event) {
             var id = $(event.relatedTarget).data('id');
-            // ajax por metodo get ya que solo queremos traer los datos y son json
-            $.get("/Inicio/Details/" + id, function (data) {
-                var success = data.success;
-                if (success == true) {
-                    var contacto = data.data;
-                    $('#editarId').val(contacto.id);
-                    $('#editarNombre').val(contacto.nombre);
-                    $('#editarTelefono').val(contacto.telefono);
-                    $('#editarCelular').val(contacto.celular);
-                    $('#editarEmail').val(contacto.email);
-                } else {
-                    console.log(data.message);
+            var modal = $(this);
+            if (id > 0) {
+                modal.find('.modal-title').text('Editar Contacto');
+                $.ajax({
+                    url: '/Inicio/GetById',
+                    data: { id: id },
+                    type: 'POST',
+                    success: function (data) {
+                        let contacto = data.data;
+                        modal.find('#id').val(contacto.id);
+                        modal.find('#nombre').val(contacto.nombre);
+                        modal.find('#telefono').val(contacto.telefono);
+                        modal.find('#celular').val(contacto.celular);
+                        modal.find('#email').val(contacto.email);
+                    }
+                });
+            } else {
+                modal.find('.modal-title').text('Crear Contacto');
+                modal.find('#id').val(0);
+                modal.find('#nombre').val('');
+                modal.find('#telefono').val('');
+                modal.find('#celular').val('');
+                modal.find('#email').val('');
+            }
+        });
+
+         $('#modalEliminar').on('show.bs.modal', function (event) {
+            var id = $(event.relatedTarget).data('id');
+            $('#idEliminar').val(id);
+        });
+
+        $('#btnEliminar').click(function (event) {
+            let id = $('#idEliminar').val();
+            let modal = $('#modalEliminar');
+            $.ajax({
+                url: '@Url.Action("Delete", "Inicio")',
+                data: { id: id },
+                type: 'POST',
+                success: function (data) {
+                    modal.find('#btnCerrarEliminar').click();
+                    $('#tblUsuarios').DataTable().ajax.reload();
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                 }
             });
         });
 
-        $('#modalDetalles').on('show.bs.modal', function (event) {
-            //por metodo ajax traemos los datos del contacto
-            var id = $(event.relatedTarget).data('id');
-            // ajax por metodo get ya que solo queremos traer los datos y son json
-            $.get("/Inicio/Details/" + id, function (data) {
-                var success = data.success;
-                if (success == true) {
-                    var contacto = data.data;
-                    $('#detallesId').val(contacto.id);
-                    $('#detallesNombre').val(contacto.nombre);
-                    $('#detallesTelefono').val(contacto.telefono);
-                    $('#detallesCelular').val(contacto.celular);
-                    $('#detallesEmail').val(contacto.email);
-                } else {
-                    console.log(data.message);
-                }
-            });
+        $('#btnGuardar').click(function (event) {
+            event.preventDefault();
+            let modal = $('#modalCrearEditarDetalles');
+            let id = $('#id').val();
+            let nombre = $('#nombre').val();
+            let telefono = $('#telefono').val();
+            let celular = $('#celular').val();
+            let email = $('#email').val();
+            if (id > 0) {
+                $.ajax({
+                    url: '@Url.Action("Update", "Inicio")',
+                    data: { id: id, nombre: nombre, telefono: telefono, celular: celular, email: email },
+                    type: 'POST',
+                    success: function (data) {
+                        if (data.success) {
+                            modal.find('#btnCancelar').click();
+                            $('#tblUsuarios').DataTable().ajax.reload();
+                            Swal.fire({
+                                icon: 'success',
+                                title: data.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else {
+                            var errorMessages = '';
+                            $.each(data.errors, function (key, value) {
+                            errorMessages += value + '<br>';
+                            });
+                            Swal.fire({
+                                icon: 'error',
+                                title: data.message,
+                                html: errorMessages
+                            });
+                        }
+                    }
+                });
+            } else {
+                $.ajax({
+                    url: '@Url.Action("Create", "Inicio")',
+                    data: { nombre: nombre, telefono: telefono, celular: celular, email: email },
+                    type: 'POST',
+                    success: function (data) {
+                        if (data.success) {
+                            modal.find('#btnCancelar').click();
+                            $('#tblUsuarios').DataTable().ajax.reload();
+                            Swal.fire({
+                                icon: 'success',
+                                title: data.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else {
+                            var errorMessages = '';
+                            $.each(data.errors, function (key, value) {
+                            errorMessages += value + '<br>';
+                            });
+                            Swal.fire({
+                                icon: 'error',
+                                title: data.message,
+                                html: errorMessages
+                            });
+                        }
+                    }
+                });
+            }
         });
+    });
 
     </script>
 }
